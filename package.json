@@ -1,6 +1,6 @@
 {
   "name": "@yukiakai/artifact",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Build deployment artifacts from project files.",
   "type": "module",
   "main": "./dist/index.js",
