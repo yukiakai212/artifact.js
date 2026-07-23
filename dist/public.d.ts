@@ -15,10 +15,6 @@ interface ArtifactBuilderOptions {
 interface BuildArtifactOptions {
     assets: readonly ArtifactAsset[];
 }
-interface ArtifactCopierOptions {
-    rootDir: string;
-    outputDir: string;
-}
 
 declare class ArtifactBuilder {
     private options;
@@ -28,4 +24,4 @@ declare class ArtifactBuilder {
     private copy;
 }
 
-export { type ArtifactAsset, ArtifactBuilder, type ArtifactBuilderOptions, type ArtifactCopierOptions, type BuildArtifactOptions };
+export { type ArtifactAsset, ArtifactBuilder, type ArtifactBuilderOptions, type BuildArtifactOptions };

@@ -1,23 +1,24 @@
 {
   "name": "@yukiakai/artifact",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Build deployment artifacts from project files.",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/public.js",
+  "types": "./dist/public.d.ts",
   "exports": {
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.js",
-    "require": "./dist/index.cjs"
+    "types": "./dist/public.d.ts",
+    "import": "./dist/public.js",
+    "require": "./dist/public.cjs"
   },
   "scripts": {
-    "test": "npm run build && npx vitest run --reporter verbose --coverage",
+    "test": "npx vitest run --reporter verbose --coverage",
     "format": "prettier --write **/*.{js,ts,json}",
     "format:check": "prettier --check **/*.{js,ts,json}",
     "lint": "eslint src/**/*.ts",
     "typecheck:workspace": "tsc -p tsconfig.workspace.json",
-    "build:src": "npx tsup",
-    "build": "npm run typecheck:workspace && npm run build:src",
+    "generate:types": "npx type-export-builder generate -p src/_public.ts",
+    "build": "npx tsup",
+    "build:public": "npm run generate:types && npx tsup --config tsup.public.config.ts",
     "docs": "npx typedoc",
     "prepare:artifact": "tsx workspace/release/prepareArtifact.ts",
     "prepare": "is-ci || husky"
@@ -69,6 +70,7 @@
     "prettier": "^3.6.2",
     "tsup": "^8.5.1",
     "tsx": "^4.20.3",
+    "type-export-builder": "^1.1.0",
     "typedoc": "^0.28.9",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.1",
