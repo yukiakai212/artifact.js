@@ -1,27 +1,38 @@
+type RelativeFilePath = string;
+type RelativeDirectoryPath = string;
+type AbsoluteDirectoryPath = string;
+type DirectoryPath = RelativeDirectoryPath | AbsoluteDirectoryPath;
+type RelativeFileOrDirectoryPath = RelativeFilePath | RelativeDirectoryPath;
 interface ArtifactAsset {
     /**
-     * Source relative to rootDir.
+     * Path relative to sourceDirectory.
      */
-    source: string;
+    source: RelativeFileOrDirectoryPath;
     /**
-     * Destination relative to outputDir.
+     * Destination path relative to outputDirectory.
      */
-    target: string;
+    destination: RelativeFileOrDirectoryPath;
 }
-interface ArtifactBuilderOptions {
-    rootDir: string;
-    outputDir: string;
-}
+
 interface BuildArtifactOptions {
     assets: readonly ArtifactAsset[];
 }
-
+interface ArtifactBuilderOptions {
+    sourceDirectory: DirectoryPath;
+    outputDirectory: DirectoryPath;
+}
 declare class ArtifactBuilder {
     private options;
     constructor(options: ArtifactBuilderOptions);
     build(options: BuildArtifactOptions): void;
-    private prepareDirectory;
+    prepareOutputDirectory(): void;
     private copy;
 }
 
-export { type ArtifactAsset, ArtifactBuilder, type ArtifactBuilderOptions, type BuildArtifactOptions };
+interface CreateArtifactBuilderOptions {
+    sourceDirectory?: DirectoryPath;
+    outputDirectory: DirectoryPath;
+}
+declare function createArtifactBuilder(options: CreateArtifactBuilderOptions): ArtifactBuilder;
+
+export { type AbsoluteDirectoryPath, type ArtifactAsset, ArtifactBuilder, type ArtifactBuilderOptions, type BuildArtifactOptions, type CreateArtifactBuilderOptions, type DirectoryPath, type RelativeDirectoryPath, type RelativeFileOrDirectoryPath, type RelativeFilePath, createArtifactBuilder };

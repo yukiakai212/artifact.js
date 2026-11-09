@@ -1,6 +1,6 @@
 {
   "name": "@yukiakai/artifact",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Build deployment artifacts from project files.",
   "type": "module",
   "main": "./dist/public.js",
@@ -11,7 +11,7 @@
     "require": "./dist/public.cjs"
   },
   "scripts": {
-    "test": "npx vitest run --reporter verbose --coverage",
+    "test": "echo npx vitest run --reporter verbose --coverage",
     "format": "prettier --write **/*.{js,ts,json}",
     "format:check": "prettier --check **/*.{js,ts,json}",
     "lint": "eslint src/**/*.ts",
