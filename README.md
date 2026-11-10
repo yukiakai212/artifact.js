@@ -1,8 +1,8 @@
 # @yukiakai/artifact
 
-Create deployment artifacts by copying selected files and directories into a fresh output directory.
+Build deployment artifacts from selected project files and directories.
 
-`@yukiakai/artifact` is useful when a project needs to assemble a separate artifact for publishing or deployment.
+`@yukiakai/artifact` copies assets from a source directory into an output directory. It is intended for release and deployment pipelines that need a separately assembled artifact.
 
 ## Installation
 
@@ -13,14 +13,16 @@ npm install @yukiakai/artifact
 ## Quick start
 
 ```ts
-import { createArtifactBuilder } from '@yukiakai/artifact';
+import { ArtifactBuilder } from '@yukiakai/artifact';
 
-const artifactBuilder = createArtifactBuilder({
+const artifactBuilder = new ArtifactBuilder({
+  sourceDirectory: process.cwd(),
   outputDirectory: '.artifact',
 });
 
-artifactBuilder.build({
-  assets: [
+artifactBuilder
+  .wipeOutputDirectory()
+  .build([
     {
       source: 'dist',
       destination: 'dist',
@@ -37,66 +39,63 @@ artifactBuilder.build({
       source: 'workspace/release/publish.yml',
       destination: '.github/workflows/release.yml',
     },
-  ],
-});
+  ]);
 ```
 
 ## Output directory lifecycle
 
-`createArtifactBuilder()` returns a builder with a fresh output directory:
+Creating an `ArtifactBuilder` does not create, remove, or modify the output directory. Choose the lifecycle operation explicitly before calling `build()`.
 
-1. If `outputDirectory` exists, it is removed recursively.
-2. A new empty output directory is created.
-3. `build()` copies assets into that directory.
+| Method | Behavior |
+| --- | --- |
+| `ensureOutputDirectory()` | Creates the output directory and its parents when absent. Keeps its existing contents. |
+| `removeOutputDirectory()` | Removes the output path recursively. Does nothing when it is absent. |
+| `wipeOutputDirectory()` | Removes the output path, then creates a new empty output directory. |
 
-**Caution:** do not use an output directory that contains files you need to retain. In particular, it must not be the same directory as `sourceDirectory`, or a parent of it.
-
-Calling `build()` again does not clean the output directory again; it adds or overwrites the requested assets.
-
-To discard the current artifact and start again:
+All lifecycle methods return the same builder, so they can be chained with `build()`.
 
 ```ts
-artifactBuilder.prepareOutputDirectory();
+artifactBuilder
+  .wipeOutputDirectory()
+  .build(assets);
 ```
+
+`build()` does not prepare the output directory itself. It throws if the directory does not exist; call `ensureOutputDirectory()` to append to an existing artifact, or `wipeOutputDirectory()` to create a fresh one.
+
+**Caution:** `removeOutputDirectory()` and `wipeOutputDirectory()` are destructive. `outputDirectory` must not be the same directory as `sourceDirectory`, or a parent of it.
 
 ## Paths
 
-`sourceDirectory` is the base directory for every asset `source`.
+`sourceDirectory` is the base directory for every asset `source`. Each asset `destination` is relative to `outputDirectory`.
 
 ```ts
-const artifactBuilder = createArtifactBuilder({
+const artifactBuilder = new ArtifactBuilder({
   sourceDirectory: 'packages/node',
   outputDirectory: 'artifacts/node-package',
 });
 ```
 
-- `sourceDirectory` defaults to the current working directory.
-- Relative `sourceDirectory` and `outputDirectory` values are resolved from the current working directory when `createArtifactBuilder()` is called.
-- `source` is relative to `sourceDirectory`.
-- `destination` is relative to `outputDirectory`.
-
-`outputDirectory` is independent from `sourceDirectory`.
+| Value | Meaning |
+| --- | --- |
+| `sourceDirectory` | Base directory used to resolve asset sources. |
+| `outputDirectory` | Root directory that receives the assembled artifact. |
+| `asset.source` | File or directory path relative to `sourceDirectory`. |
+| `asset.destination` | File or directory path relative to `outputDirectory`. |
 
 ## API
 
-### `createArtifactBuilder(options)`
+### `new ArtifactBuilder(options)`
 
 ```ts
-interface CreateArtifactBuilderOptions {
-  sourceDirectory?: string;
+interface ArtifactBuilderOptions {
+  sourceDirectory: string;
   outputDirectory: string;
 }
 ```
 
-Creates an `ArtifactBuilder` and prepares its output directory.
-
-### `builder.build(options)`
+### `builder.build(assets)`
 
 ```ts
-interface BuildArtifactOptions {
-  assets: readonly ArtifactAsset[];
-}
-
 interface ArtifactAsset {
   source: string;
   destination: string;
@@ -109,27 +108,27 @@ Copies every asset into the output directory.
 - Directories are copied recursively.
 - Missing parent directories for a destination are created automatically.
 - A missing source throws an error.
-
-Assets are processed in order. If a later source is missing, earlier assets may already have been copied.
+- Assets are processed in order; if a later source is missing, earlier assets may already have been copied.
 
 ## Example: package artifact
 
 ```ts
-import { createArtifactBuilder } from '@yukiakai/artifact';
+import { ArtifactBuilder } from '@yukiakai/artifact';
 
-const artifactBuilder = createArtifactBuilder({
+const artifactBuilder = new ArtifactBuilder({
+  sourceDirectory: process.cwd(),
   outputDirectory: '.artifact',
 });
 
-artifactBuilder.build({
-  assets: [
+artifactBuilder
+  .wipeOutputDirectory()
+  .build([
     { source: 'dist', destination: 'dist' },
     { source: 'package.json', destination: 'package.json' },
     { source: 'package-lock.json', destination: 'package-lock.json' },
     { source: 'README.md', destination: 'README.md' },
     { source: 'LICENSE', destination: 'LICENSE' },
-  ],
-});
+  ]);
 ```
 
 ## License

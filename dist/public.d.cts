@@ -14,9 +14,6 @@ interface ArtifactAsset {
     destination: RelativeFileOrDirectoryPath;
 }
 
-interface BuildArtifactOptions {
-    assets: readonly ArtifactAsset[];
-}
 interface ArtifactBuilderOptions {
     sourceDirectory: DirectoryPath;
     outputDirectory: DirectoryPath;
@@ -24,15 +21,13 @@ interface ArtifactBuilderOptions {
 declare class ArtifactBuilder {
     private options;
     constructor(options: ArtifactBuilderOptions);
-    build(options: BuildArtifactOptions): void;
-    prepareOutputDirectory(): void;
+    build(assets: ArtifactAsset[]): this;
+    ensureOutputDirectory(): this;
+    removeOutputDirectory(): this;
+    wipeOutputDirectory(): this;
+    private assertOutputDirectoryExists;
+    private assertOutputDirectoryDoesNotContainSourceDirectory;
     private copy;
 }
 
-interface CreateArtifactBuilderOptions {
-    sourceDirectory?: DirectoryPath;
-    outputDirectory: DirectoryPath;
-}
-declare function createArtifactBuilder(options: CreateArtifactBuilderOptions): ArtifactBuilder;
-
-export { type AbsoluteDirectoryPath, type ArtifactAsset, ArtifactBuilder, type ArtifactBuilderOptions, type BuildArtifactOptions, type CreateArtifactBuilderOptions, type DirectoryPath, type RelativeDirectoryPath, type RelativeFileOrDirectoryPath, type RelativeFilePath, createArtifactBuilder };
+export { type AbsoluteDirectoryPath, type ArtifactAsset, ArtifactBuilder, type ArtifactBuilderOptions, type DirectoryPath, type RelativeDirectoryPath, type RelativeFileOrDirectoryPath, type RelativeFilePath };

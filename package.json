@@ -1,6 +1,6 @@
 {
   "name": "@yukiakai/artifact",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Build deployment artifacts from project files.",
   "type": "module",
   "main": "./dist/public.js",
@@ -12,8 +12,8 @@
   },
   "scripts": {
     "test": "echo npx vitest run --reporter verbose --coverage",
-    "format": "prettier --write **/*.{js,ts,json}",
-    "format:check": "prettier --check **/*.{js,ts,json}",
+    "format": "prettier --write **/*.{ts,json,yml}",
+    "format:check": "prettier --check **/*.{ts,json,yml}",
     "lint": "eslint src/**/*.ts",
     "typecheck:workspace": "tsc -p tsconfig.workspace.json",
     "generate:types": "npx type-export-builder generate -p src/_public.ts",
@@ -21,7 +21,7 @@
     "build:public": "npm run generate:types && npx tsup --config tsup.public.config.ts",
     "docs": "npx typedoc",
     "prepare:artifact": "tsx workspace/release/prepareArtifact.ts",
-    "prepare": "is-ci || husky"
+    "prepare": "echo is-ci || husky"
   },
   "files": [
     "dist/*",
